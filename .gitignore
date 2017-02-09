@@ -1,5 +1,12 @@
 *.class
 
+# build directories
+out/
+target/
+build/
+generated/
+gen/
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
