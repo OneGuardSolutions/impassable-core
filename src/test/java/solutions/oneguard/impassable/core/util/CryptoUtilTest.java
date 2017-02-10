@@ -34,7 +34,7 @@ public class CryptoUtilTest {
     }
 
     @Test
-    public void encryptAndDecrypt() throws Exception {
+    public void encryptAndDecryptAndGenerateKey() throws Exception {
         byte[] encrypted = CryptoUtil.encrypt(cipherDescription, secret, initVector, raw);
         byte[] decrypted = CryptoUtil.decrypt(cipherDescription, secret, initVector, encrypted);
 

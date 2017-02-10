@@ -22,7 +22,7 @@ public class AESCryptoUtilTest {
     }
 
     @Test
-    public void encryptAndDecrypt() throws Exception {
+    public void encryptAndDecryptAndGenerateKey() throws Exception {
         byte[] encrypted = AESCryptoUtil.encrypt(secret, raw);
         byte[] decrypted = AESCryptoUtil.decrypt(secret, encrypted);
 
