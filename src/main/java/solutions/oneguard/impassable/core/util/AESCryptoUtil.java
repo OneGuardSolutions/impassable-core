@@ -34,11 +34,16 @@ public class AESCryptoUtil {
         }
     }
 
-    public static byte[] encrypt(Key secret, byte[] raw) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static byte[] encrypt(Key secret, byte[] raw) throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
         byte[] initVector = new byte[ivLength];
         random.nextBytes(initVector);
 
-        byte[] encrypted = CryptoUtil.encrypt(cipherDescription, secret, initVector, raw);
+        byte[] encrypted;
+        try {
+            encrypted = CryptoUtil.encrypt(cipherDescription, secret, initVector, raw);
+        } catch (NoSuchPaddingException|NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         byte[] encryptedIVAndText = new byte[initVector.length + encrypted.length];
         System.arraycopy(initVector, 0, encryptedIVAndText, 0, initVector.length);
