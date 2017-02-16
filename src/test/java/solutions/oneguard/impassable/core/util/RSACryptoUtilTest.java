@@ -24,9 +24,21 @@ public class RSACryptoUtilTest {
     public void encrypt() throws Exception {
         KeyPair keyPair = RSACryptoUtil.generateKey();
 
-        // max block size = key bit-length / 8 - padding
-        // for 4096-bit key it's 446 bytes
-        byte[] raw = new byte[446];
+        byte[] raw = new byte[20];
+        Random random = new Random();
+        random.nextBytes(raw);
+
+        byte[] encrypted = RSACryptoUtil.encrypt(keyPair.getPublic(), raw);
+        byte[] decrypted = RSACryptoUtil.decrypt(keyPair.getPrivate(), encrypted);
+
+        assertArrayEquals(raw, decrypted);
+    }
+
+    @Test
+    public void encryptEncapsulated() throws Exception {
+        KeyPair keyPair = RSACryptoUtil.generateKey();
+
+        byte[] raw = new byte[1024];
         Random random = new Random();
         random.nextBytes(raw);
 

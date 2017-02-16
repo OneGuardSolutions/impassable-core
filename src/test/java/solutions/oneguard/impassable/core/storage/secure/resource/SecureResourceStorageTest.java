@@ -1,34 +1,38 @@
-package solutions.oneguard.impassable.core.storage;
+package solutions.oneguard.impassable.core.storage.secure.resource;
 
 import org.junit.Test;
+import solutions.oneguard.impassable.core.storage.byteArray.InMemoryByteArrayStorage;
 import solutions.oneguard.impassable.core.util.AESCryptoUtil;
 
 import java.security.Key;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class SecureStorageTest {
+public class SecureResourceStorageTest {
+    @Test
+    public void constructor() throws Exception {
+        SecureResourceStorage storage = new SecureResourceStorage(new InMemoryByteArrayStorage());
+        assertNotNull(storage);
+    }
+
     @Test
     public void storeAndRetrieve() throws Exception {
+        SecureResourceStorage storage = new SecureResourceStorage(new InMemoryByteArrayStorage());
         Key key = AESCryptoUtil.generateKey();
-
-        SecureStorage storage = new InMemorySecureStorage();
-        Resource resource = new TestResource("Hello storage");
+        Resource resource = new TestResource();
 
         storage.store(resource, key);
-        Resource resource2 = storage.retrieve(resource.getId(), key);
 
-        assertEquals(resource, resource2);
+        assertEquals(resource, storage.retrieve(resource.getId(), key));
     }
 
     private static class TestResource implements Resource {
-        private UUID id;
-        private String text;
+        private final UUID id;
 
-        TestResource(String text) {
+        TestResource() {
             this.id = UUID.randomUUID();
-            this.text = text;
         }
 
         @Override
@@ -43,12 +47,12 @@ public class SecureStorageTest {
 
             TestResource that = (TestResource) o;
 
-            return text != null ? text.equals(that.text) : that.text == null;
+            return id.equals(that.id);
         }
 
         @Override
         public int hashCode() {
-            return text != null ? text.hashCode() : 0;
+            return id.hashCode();
         }
     }
 }

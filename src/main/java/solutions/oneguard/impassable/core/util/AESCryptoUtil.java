@@ -6,6 +6,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.util.Random;
 
@@ -26,12 +27,21 @@ public class AESCryptoUtil {
 
     public static Key generateKey() {
         try {
-            int keyLength = Cipher.getMaxAllowedKeyLength(cipherDescription);
-
-            return CryptoUtil.generateKey(cipher, keyLength > 32 ? 32 : keyLength); // max 256 bits
+            return CryptoUtil.generateKey(cipher, getKeyLength());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static int getKeyLength() {
+        final int keyLength;
+        try {
+            keyLength = Cipher.getMaxAllowedKeyLength(cipherDescription);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        return keyLength > 32 ? 32 : keyLength; // max 256 bits
     }
 
     public static byte[] encrypt(Key secret, byte[] raw) throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
@@ -45,11 +55,11 @@ public class AESCryptoUtil {
             throw new RuntimeException(e);
         }
 
-        byte[] encryptedIVAndText = new byte[initVector.length + encrypted.length];
-        System.arraycopy(initVector, 0, encryptedIVAndText, 0, initVector.length);
-        System.arraycopy(encrypted, 0, encryptedIVAndText, initVector.length, encrypted.length);
-
-        return encryptedIVAndText;
+        return ByteBuffer.allocate(initVector.length + encrypted.length)
+            .put(initVector)
+            .put(encrypted)
+            .array()
+        ;
     }
 
     public static byte[] decrypt(Key secret, byte[] encrypted) throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {

@@ -1,4 +1,4 @@
-package solutions.oneguard.impassable.core.storage;
+package solutions.oneguard.impassable.core.storage.secure.resource;
 
 import java.io.Serializable;
 import java.util.UUID;
