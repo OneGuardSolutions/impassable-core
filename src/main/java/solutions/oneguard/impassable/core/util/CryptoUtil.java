@@ -1,60 +1,32 @@
 package solutions.oneguard.impassable.core.util;
 
-import org.uncommons.maths.random.AESCounterRNG;
+import org.springframework.security.crypto.keygen.KeyGenerators;
+import solutions.oneguard.impassable.core.storage.secure.key.KeyAndSalt;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.*;
-import java.security.spec.AlgorithmParameterSpec;
-import java.util.Random;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 
 public class CryptoUtil {
-    private static Random random;
+    private static final int SYMMETRIC_KEY_LENGTH = 32; // 256-bit
+    private static final int ASYMMETRIC_KEY_LENGTH = 4096; // 4096-bit
 
-    static {
+    public static byte[] generateKey() {
+        return KeyGenerators.secureRandom(SYMMETRIC_KEY_LENGTH).generateKey();
+    }
+
+    public static byte[] generateSalt() {
+        return KeyGenerators.secureRandom().generateKey();
+    }
+
+    public static KeyPair generateKeyPair() {
         try {
-            random = new AESCounterRNG();
-        } catch (GeneralSecurityException ignored) {}
-    }
+            final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            keyGen.initialize(ASYMMETRIC_KEY_LENGTH);
 
-    public static Key generateKey(String cipher, int keyLength) throws NoSuchAlgorithmException {
-        byte[] key = new byte[keyLength];
-        random.nextBytes(key);
-
-        return new SecretKeySpec(key, cipher);
-    }
-
-    public static byte[] encrypt(String cipherDefinition, Key secret, byte[] initVector, byte[] raw) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        return encrypt(cipherDefinition, secret, new IvParameterSpec(initVector), raw);
-    }
-
-    public static byte[] encrypt(String cipherDefinition, Key secret, AlgorithmParameterSpec parameterSpec, byte[] raw) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance(cipherDefinition);
-        if (parameterSpec == null) {
-            cipher.init(Cipher.ENCRYPT_MODE, secret);
-        } else {
-            cipher.init(Cipher.ENCRYPT_MODE, secret, parameterSpec);
+            return keyGen.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
         }
-
-        return cipher.doFinal(raw);
-    }
-
-    public static byte[] decrypt(String cipherDefinition, Key secret, byte[] initVector, byte[] encrypted) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        return decrypt(cipherDefinition, secret, new IvParameterSpec(initVector), encrypted);
-    }
-
-    public static byte[] decrypt(String cipherDefinition, Key secret, AlgorithmParameterSpec parameterSpec, byte[] encrypted) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance(cipherDefinition);
-        if (parameterSpec == null) {
-            cipher.init(Cipher.DECRYPT_MODE, secret);
-        } else {
-            cipher.init(Cipher.DECRYPT_MODE, secret, parameterSpec);
-        }
-
-        return cipher.doFinal(encrypted);
     }
 }

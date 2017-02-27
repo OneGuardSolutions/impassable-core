@@ -1,43 +1,30 @@
 package solutions.oneguard.impassable.core.util;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.uncommons.maths.random.AESCounterRNG;
 
-import javax.crypto.Cipher;
-import java.security.Key;
-import java.util.Random;
+import java.security.KeyPair;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 public class CryptoUtilTest {
-    private static final String cipherDescription = "AES/CBC/PKCS5PADDING";
-    private static final String cipher = "AES";
+    @Test
+    public void generateKey() throws Exception {
+        byte[] key = CryptoUtil.generateKey();
 
-    private Key secret;
-    private byte[] raw;
-    private byte[] initVector;
-
-    @Before
-    public void setUp() throws Exception {
-        Random random = new AESCounterRNG();
-
-        int keyLength = Cipher.getMaxAllowedKeyLength(cipherDescription);
-        secret = CryptoUtil.generateKey(cipher, keyLength > 32 ? 32 : keyLength); // max 256 bits
-
-        initVector = new byte[16];
-        random.nextBytes(initVector);
-
-        random = new Random();
-        raw = new byte[1024];
-        random.nextBytes(raw);
+        assertEquals(32, key.length); // 256 bits
     }
 
     @Test
-    public void encryptAndDecryptAndGenerateKey() throws Exception {
-        byte[] encrypted = CryptoUtil.encrypt(cipherDescription, secret, initVector, raw);
-        byte[] decrypted = CryptoUtil.decrypt(cipherDescription, secret, initVector, encrypted);
+    public void generateSalt() throws Exception {
+        byte[] salt = CryptoUtil.generateSalt();
 
-        assertArrayEquals(raw, decrypted);
+        assertNotEquals(0, salt.length);
+    }
+
+    @Test
+    public void generateKeyPair() throws Exception {
+        KeyPair keyPair = CryptoUtil.generateKeyPair();
+
+        assertNotNull(keyPair);
     }
 }

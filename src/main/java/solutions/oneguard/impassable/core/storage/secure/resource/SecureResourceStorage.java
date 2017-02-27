@@ -11,7 +11,7 @@ public class SecureResourceStorage extends SecureSymmetricStorage<Resource> {
         super(Resource.class, storage);
     }
 
-    public void store(Resource resource, Key secret) throws StorageException {
-        super.store(resource.getId(), resource, secret);
+    public void store(Resource resource, byte[] key, byte[] salt) throws StorageException {
+        super.store(resource.getId(), resource, key, salt);
     }
 }

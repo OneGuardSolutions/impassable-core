@@ -1,13 +1,13 @@
 package solutions.oneguard.impassable.core.storage.secure;
 
+import org.springframework.security.crypto.codec.Hex;
+import org.springframework.security.crypto.encrypt.BytesEncryptor;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.util.SerializationUtils;
 import solutions.oneguard.impassable.core.storage.StorageException;
 import solutions.oneguard.impassable.core.storage.byteArray.ByteArrayStorage;
-import solutions.oneguard.impassable.core.util.AESCryptoUtil;
-import solutions.oneguard.impassable.core.util.SerializationUtil;
 
 import java.io.Serializable;
-import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.util.UUID;
 
 public class SecureSymmetricStorage <T extends Serializable> {
@@ -19,32 +19,25 @@ public class SecureSymmetricStorage <T extends Serializable> {
         this.storage = storage;
     }
 
-    public void store(UUID id, T resource, Key secret) throws StorageException {
-        byte[] encodedResource = SerializationUtil.serialize(resource);
+    public void store(UUID id, T resource, byte[] key, byte[] salt) throws StorageException {
+        BytesEncryptor encryptor = Encryptors.stronger(new String(key), new String(Hex.encode(salt)));
 
-        final byte[] encrypted;
-        try {
-            encrypted = AESCryptoUtil.encrypt(secret, encodedResource);
-        } catch (GeneralSecurityException e) {
-            throw new SecureStorageException("could not encrypt the resource", e);
-        }
+        byte[] serialized = SerializationUtils.serialize(resource);
+        byte[] encrypted = encryptor.encrypt(serialized);
 
         storage.store(id, encrypted);
     }
 
-    public T retrieve(UUID id, Key secret) throws StorageException {
+    public T retrieve(UUID id, byte[] key, byte[] salt) throws StorageException {
         byte[] encrypted = storage.retrieve(id);
         if (encrypted == null) {
             return null;
         }
 
-        final byte[] encodedResource;
-        try {
-            encodedResource = AESCryptoUtil.decrypt(secret, encrypted);
-        } catch (GeneralSecurityException e) {
-            throw new SecureStorageException("could not decrypt the resource", e);
-        }
+        BytesEncryptor encryptor = Encryptors.stronger(new String(key), new String(Hex.encode(salt)));
+        byte[] serialized = encryptor.decrypt(encrypted);
+        Object deserialized = SerializationUtils.deserialize(serialized);
 
-        return SerializationUtil.deserialize(tClass, encodedResource);
+        return tClass.cast(deserialized);
     }
 }

@@ -1,10 +1,9 @@
 package solutions.oneguard.impassable.core.storage.secure.resource;
 
 import org.junit.Test;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import solutions.oneguard.impassable.core.storage.byteArray.InMemoryByteArrayStorage;
-import solutions.oneguard.impassable.core.util.AESCryptoUtil;
 
-import java.security.Key;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -19,13 +18,15 @@ public class SecureResourceStorageTest {
 
     @Test
     public void storeAndRetrieve() throws Exception {
+        byte[] key = KeyGenerators.secureRandom(16).generateKey();
+        byte[] salt = KeyGenerators.secureRandom().generateKey();
+
         SecureResourceStorage storage = new SecureResourceStorage(new InMemoryByteArrayStorage());
-        Key key = AESCryptoUtil.generateKey();
         Resource resource = new TestResource();
 
-        storage.store(resource, key);
+        storage.store(resource, key, salt);
 
-        assertEquals(resource, storage.retrieve(resource.getId(), key));
+        assertEquals(resource, storage.retrieve(resource.getId(), key, salt));
     }
 
     private static class TestResource implements Resource {

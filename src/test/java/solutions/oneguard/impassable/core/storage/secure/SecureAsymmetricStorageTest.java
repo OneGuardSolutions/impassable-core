@@ -4,16 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import solutions.oneguard.impassable.core.storage.TestSerializable;
 import solutions.oneguard.impassable.core.storage.byteArray.InMemoryByteArrayStorage;
-import solutions.oneguard.impassable.core.util.AESCryptoUtil;
-import solutions.oneguard.impassable.core.util.RSACryptoUtil;
+import solutions.oneguard.impassable.core.util.CryptoUtil;
 
-import java.io.Serializable;
-import java.security.Key;
 import java.security.KeyPair;
-import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class SecureAsymmetricStorageTest {
     private SecureAsymmetricStorage<TestSerializable> storage;
@@ -25,12 +22,19 @@ public class SecureAsymmetricStorageTest {
 
     @Test
     public void storeAndRetrieve() throws Exception {
-        KeyPair keyPair = RSACryptoUtil.generateKey();
+        KeyPair keyPair = CryptoUtil.generateKeyPair();
         UUID id = UUID.randomUUID();
         TestSerializable testObject = TestSerializable.generate();
 
         storage.store(id, testObject, keyPair.getPublic());
 
-        assertEquals(testObject, storage.retrieve(id, keyPair.getPrivate()));
+        assertEquals(testObject, storage.retrieve(id, keyPair));
+    }
+
+    @Test
+    public void retrieveNotStored() throws Exception {
+        KeyPair keyPair = CryptoUtil.generateKeyPair();
+
+        assertNull(storage.retrieve(UUID.randomUUID(), keyPair));
     }
 }
