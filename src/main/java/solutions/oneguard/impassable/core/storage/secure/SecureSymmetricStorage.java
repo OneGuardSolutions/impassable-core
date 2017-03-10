@@ -20,7 +20,7 @@ public class SecureSymmetricStorage <T extends Serializable> {
     }
 
     public void store(UUID id, T resource, byte[] key, byte[] salt) throws StorageException {
-        BytesEncryptor encryptor = Encryptors.stronger(new String(key), new String(Hex.encode(salt)));
+        BytesEncryptor encryptor = Encryptors.standard(new String(key), new String(Hex.encode(salt)));
 
         byte[] serialized = SerializationUtils.serialize(resource);
         byte[] encrypted = encryptor.encrypt(serialized);
@@ -34,7 +34,7 @@ public class SecureSymmetricStorage <T extends Serializable> {
             return null;
         }
 
-        BytesEncryptor encryptor = Encryptors.stronger(new String(key), new String(Hex.encode(salt)));
+        BytesEncryptor encryptor = Encryptors.standard(new String(key), new String(Hex.encode(salt)));
         byte[] serialized = encryptor.decrypt(encrypted);
         Object deserialized = SerializationUtils.deserialize(serialized);
 

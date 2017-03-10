@@ -22,7 +22,7 @@ public class SecureAsymmetricStorage <T extends Serializable> {
     }
 
     public void store(UUID resourceId, T resource, PublicKey publicKey) throws StorageException {
-        BytesEncryptor encryptor = new RsaSecretEncryptor(publicKey, RsaAlgorithm.OAEP);
+        BytesEncryptor encryptor = new RsaSecretEncryptor(publicKey, RsaAlgorithm.DEFAULT);
         byte[] serialized = SerializationUtils.serialize(resource);
         byte[] encrypted = encryptor.encrypt(serialized);
 
@@ -35,7 +35,7 @@ public class SecureAsymmetricStorage <T extends Serializable> {
             return null;
         }
 
-        BytesEncryptor encryptor = new RsaSecretEncryptor(key, RsaAlgorithm.OAEP);
+        BytesEncryptor encryptor = new RsaSecretEncryptor(key, RsaAlgorithm.DEFAULT);
         byte[] serialized = encryptor.decrypt(encrypted);
         Object deserialized = SerializationUtils.deserialize(serialized);
 
