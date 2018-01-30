@@ -4,8 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import solutions.oneguard.impassable.core.storage.TestSerializable;
 import solutions.oneguard.impassable.core.storage.byteArray.InMemoryByteArrayStorage;
-import solutions.oneguard.impassable.core.storage.secure.key.KeyAndSalt;
-import solutions.oneguard.impassable.core.util.CryptoUtil;
+import solutions.oneguard.impassable.core.util.CryptUtil;
 
 import java.util.UUID;
 
@@ -21,8 +20,8 @@ public class SecureSymmetricStorageTest {
     @Before
     public void setUp() throws Exception {
         storage = new SecureSymmetricStorage<>(TestSerializable.class, new InMemoryByteArrayStorage());
-        key = CryptoUtil.generateKey();
-        salt = CryptoUtil.generateSalt();
+        key = CryptUtil.generateKey();
+        salt = CryptUtil.generateSalt();
         id = UUID.randomUUID();
     }
 

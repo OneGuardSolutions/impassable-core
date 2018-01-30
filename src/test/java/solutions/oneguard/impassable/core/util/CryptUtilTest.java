@@ -6,24 +6,24 @@ import java.security.KeyPair;
 
 import static org.junit.Assert.*;
 
-public class CryptoUtilTest {
+public class CryptUtilTest {
     @Test
     public void generateKey() throws Exception {
-        byte[] key = CryptoUtil.generateKey();
+        byte[] key = CryptUtil.generateKey();
 
         assertEquals(32, key.length); // 256 bits
     }
 
     @Test
     public void generateSalt() throws Exception {
-        byte[] salt = CryptoUtil.generateSalt();
+        byte[] salt = CryptUtil.generateSalt();
 
         assertNotEquals(0, salt.length);
     }
 
     @Test
     public void generateKeyPair() throws Exception {
-        KeyPair keyPair = CryptoUtil.generateKeyPair();
+        KeyPair keyPair = CryptUtil.generateKeyPair();
 
         assertNotNull(keyPair);
     }

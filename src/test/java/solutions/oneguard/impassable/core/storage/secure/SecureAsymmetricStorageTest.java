@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import solutions.oneguard.impassable.core.storage.TestSerializable;
 import solutions.oneguard.impassable.core.storage.byteArray.InMemoryByteArrayStorage;
-import solutions.oneguard.impassable.core.util.CryptoUtil;
+import solutions.oneguard.impassable.core.util.CryptUtil;
 
 import java.security.KeyPair;
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class SecureAsymmetricStorageTest {
 
     @Test
     public void storeAndRetrieve() throws Exception {
-        KeyPair keyPair = CryptoUtil.generateKeyPair();
+        KeyPair keyPair = CryptUtil.generateKeyPair();
         UUID id = UUID.randomUUID();
         TestSerializable testObject = TestSerializable.generate();
 
@@ -33,7 +33,7 @@ public class SecureAsymmetricStorageTest {
 
     @Test
     public void retrieveNotStored() throws Exception {
-        KeyPair keyPair = CryptoUtil.generateKeyPair();
+        KeyPair keyPair = CryptUtil.generateKeyPair();
 
         assertNull(storage.retrieve(UUID.randomUUID(), keyPair));
     }

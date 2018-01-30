@@ -1,13 +1,12 @@
 package solutions.oneguard.impassable.core.util;
 
 import org.springframework.security.crypto.keygen.KeyGenerators;
-import solutions.oneguard.impassable.core.storage.secure.key.KeyAndSalt;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-public class CryptoUtil {
+public class CryptUtil {
     private static final int SYMMETRIC_KEY_LENGTH = 32; // 256-bit
     private static final int ASYMMETRIC_KEY_LENGTH = 4096; // 4096-bit
 
